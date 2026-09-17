@@ -1,14 +1,7 @@
 const {test} = require('node:test');
 const assert = require('node:assert/strict');
-const ts = require('typescript');
-const fs = require('node:fs');
 const {execFileSync} = require('node:child_process');
-require.extensions['.ts'] = (module, filename) => module._compile(ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText,filename);
-const {generateFloorPlanSvg} = require('../lib/floor-plan.ts');
-const {generateRubyScript} = require('../lib/ruby-generator.ts');
-const {buildBoothScene} = require('../lib/booth-geometry.ts');
-const fixture = {projectName:'Fixture',clientName:'Fixture',boothName:'Fixture Booth',width:6,depth:4,wallHeight:3,style:'modern',openSides:['front'],scenes:[{name:'Front',eye:{x:-4,y:-5,z:5},target:{x:3,y:2,z:1}}],elements:[{id:'desk',type:'reception_desk',label:'Welcome',position:{x:2,y:1},dimensions:{width:2,depth:0.6,height:1}},{id:'floor',type:'floor',position:{x:0,y:0},dimensions:{width:6,depth:4,height:0.05}}]};
-fs.writeFileSync('/tmp/booth-delivery-fixture.json',JSON.stringify({config:fixture,rubyScript:generateRubyScript(fixture),floorPlanSvg:generateFloorPlanSvg(fixture),warnings:[]}));
+const {fixture,generateFloorPlanSvg,generateRubyScript,buildBoothScene} = require('./fixture.cjs');
 test('SVG escapes markup and does not reorder caller elements',()=>{
  const c=structuredClone(fixture);c.boothName='<script>alert(1)</script>';c.elements[0].label='<image href="x" onerror="alert(1)"/>';
  const before=JSON.stringify(c);const svg=generateFloorPlanSvg(c);assert.equal(JSON.stringify(c),before);assert.ok(!svg.includes('<script>'));assert.ok(!svg.includes('<image'));assert.ok(svg.includes('&lt;script&gt;'));
