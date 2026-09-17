@@ -25,3 +25,10 @@ test('Ruby hostile labels remain literals; syntax validation does not execute sc
 test('fixture creates named finite 3D mesh geometry',()=>{
  const scene=buildBoothScene(fixture);assert.equal(scene.children.length,fixture.elements.length);let meshes=0;scene.traverse(obj=>{if(obj.isMesh){meshes++;for(const n of obj.geometry.attributes.position.array)assert.ok(Number.isFinite(n));}});assert.ok(meshes>0);
 });
+
+test('Ruby scene cameras use the supported mutable Camera API',()=>{
+ const ruby=generateRubyScript(fixture);
+ assert.ok(!/page_\d+\.camera\s*=/.test(ruby));
+ assert.match(ruby,/page_0\.camera\.set\(cam_0\.eye, cam_0\.target, cam_0\.up\)/);
+ assert.match(execFileSync('ruby',['-c'],{input:ruby,encoding:'utf8'}),/Syntax OK/);
+});

@@ -893,7 +893,9 @@ begin
     Geom::Vector3d.new(0, 0, 1)
   )
   page_${i} = pages["${scene.name}"] || pages.add("${scene.name}")
-  page_${i}.camera = cam_${i}
+  page_${i}.camera.set(cam_${i}.eye, cam_${i}.target, cam_${i}.up)
+  page_${i}.camera.perspective = cam_${i}.perspective?
+  page_${i}.camera.fov = cam_${i}.fov
   page_${i}.use_camera = true
   page_${i}.use_rendering_options = true
 rescue => e
