@@ -1,3 +1,4 @@
+import { assertExportConfig } from './export-safety';
 import * as THREE from 'three';
 import { BoothConfig, BoothElement } from './types';
 
@@ -811,6 +812,7 @@ function buildCeilingCanopy(el: BoothElement, config: BoothConfig): THREE.Group 
 // ─── Main Scene Builder ──────────────────────────────────────────────────────
 
 export function buildBoothScene(config: BoothConfig): THREE.Group {
+  assertExportConfig(config);
   const booth = new THREE.Group();
   booth.name = config.boothName || 'Booth';
 

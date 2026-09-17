@@ -62,13 +62,13 @@ const BoothViewer3D = forwardRef<BoothViewer3DHandle, BoothViewer3DProps>(
     const sceneRef = useRef<THREE.Group | null>(null);
 
     const doExportGLB = useCallback(async () => {
-      if (!sceneRef.current) return;
+      if (!sceneRef.current) throw new Error('The 3D model is still loading. Try the export again shortly.');
       const blob = await exportToGLB(sceneRef.current);
       downloadBlob(blob, `${(name || config.boothName || 'booth').replace(/\s+/g, '_')}.glb`);
     }, [config.boothName, name]);
 
     const doExportUSDZ = useCallback(async () => {
-      if (!sceneRef.current) return;
+      if (!sceneRef.current) throw new Error('The 3D model is still loading. Try the export again shortly.');
       const blob = await exportToUSDZ(sceneRef.current);
       downloadBlob(blob, `${(name || config.boothName || 'booth').replace(/\s+/g, '_')}.usdz`);
     }, [config.boothName, name]);

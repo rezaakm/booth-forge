@@ -1,3 +1,4 @@
+import { assertExportConfig, escapeXml } from './export-safety';
 import { BoothConfig, BoothElement } from './types';
 
 const SCALE = 60; // pixels per meter
@@ -43,7 +44,7 @@ function elementColor(el: BoothElement): string {
 }
 
 function elementLabel(el: BoothElement): string {
-  return el.label ?? el.type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  return escapeXml(el.label ?? el.type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
 }
 
 function renderElement(el: BoothElement, depth: number): string {
@@ -112,6 +113,7 @@ function renderElement(el: BoothElement, depth: number): string {
 }
 
 export function generateFloorPlanSvg(config: BoothConfig): string {
+  assertExportConfig(config);
   const svgW = config.width * SCALE + PADDING * 2;
   const svgH = config.depth * SCALE + PADDING * 2;
 
@@ -120,7 +122,7 @@ export function generateFloorPlanSvg(config: BoothConfig): string {
   const boothW = config.width * SCALE;
   const boothH = config.depth * SCALE;
 
-  const elements = config.elements
+  const elements = [...config.elements]
     .sort((a, b) => {
       const order: Record<string, number> = { floor: 0, back_wall: 1, side_wall_left: 1, side_wall_right: 1 };
       return (order[a.type] ?? 5) - (order[b.type] ?? 5);
@@ -169,7 +171,7 @@ export function generateFloorPlanSvg(config: BoothConfig): string {
   <text x="${PADDING}" y="${svgH - 8}" font-size="10" fill="#666">↓ FRONT (entry)</text>
   
   <!-- Title -->
-  <text x="${svgW - PADDING}" y="${PADDING - 10}" text-anchor="end" font-size="11" fill="#aaa" font-weight="bold">${config.boothName}</text>
-  <text x="${svgW - PADDING}" y="${svgH - 8}" text-anchor="end" font-size="9" fill="#555">Booth Forge · ${config.width}m × ${config.depth}m · ${config.style}</text>
+  <text x="${svgW - PADDING}" y="${PADDING - 10}" text-anchor="end" font-size="11" fill="#aaa" font-weight="bold">${escapeXml(config.boothName)}</text>
+  <text x="${svgW - PADDING}" y="${svgH - 8}" text-anchor="end" font-size="9" fill="#555">Booth Forge · ${config.width}m × ${config.depth}m · ${escapeXml(config.style)}</text>
 </svg>`;
 }

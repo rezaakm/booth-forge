@@ -57,6 +57,9 @@ Return ONLY valid JSON matching this schema exactly, no markdown:
 }`;
 
 export async function POST(req: NextRequest) {
+  if (!process.env.ANTHROPIC_API_KEY?.trim()) {
+    return NextResponse.json({ error: 'AI generation is not configured. Ask the app owner to configure the provider API key.' }, { status: 503 });
+  }
   try {
     const body = await req.json();
     const { imageBase64, mimeType = 'image/png', notes = '', projectName = 'Sketch Project', clientName = 'Client' } = body;

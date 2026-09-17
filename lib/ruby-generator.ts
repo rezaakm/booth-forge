@@ -1,3 +1,4 @@
+import { assertExportConfig, rubyText } from './export-safety';
 import { BoothConfig, BoothElement, CameraScene } from './types';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -907,6 +908,12 @@ end
 // ─── Main Generator ───────────────────────────────────────────────────────────
 
 export function generateRubyScript(config: BoothConfig): string {
+  assertExportConfig(config);
+  config = { ...config, projectName: rubyText(config.projectName), clientName: rubyText(config.clientName),
+    boothName: rubyText(config.boothName), style: rubyText(config.style) as BoothConfig['style'],
+    elements: config.elements.map((el, index) => ({ ...el, id: `element_${index}`, type: rubyText(el.type) as BoothElement['type'], label: el.label === undefined ? undefined : rubyText(el.label) })),
+    scenes: config.scenes.map(scene => ({ ...scene, name: rubyText(scene.name) })),
+  };
   const lines: string[] = [];
 
   lines.push(`# ═══════════════════════════════════════════════════════════════════`);

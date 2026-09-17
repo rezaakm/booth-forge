@@ -66,6 +66,9 @@ Return ONLY valid JSON, no markdown fences:
 Be precise with bounds. A 20m × 15m space divided into 6 zones means each zone is roughly 6-7m × 5-7m, not all 0-20 × 0-15.`;
 
 export async function POST(req: NextRequest) {
+  if (!process.env.ANTHROPIC_API_KEY?.trim()) {
+    return NextResponse.json({ error: 'AI generation is not configured. Ask the app owner to configure the provider API key.' }, { status: 503 });
+  }
   try {
     const { image, mediaType, notes } = await req.json();
 

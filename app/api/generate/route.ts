@@ -6,6 +6,9 @@ import { validateAndFixConfig } from '@/lib/config-validator';
 import { GenerateRequest, GenerateResponse } from '@/lib/types';
 
 export async function POST(req: NextRequest) {
+  if (!process.env.ANTHROPIC_API_KEY?.trim()) {
+    return NextResponse.json({ error: 'AI generation is not configured. Ask the app owner to configure the provider API key.' }, { status: 503 });
+  }
   try {
     const body: GenerateRequest = await req.json();
 
